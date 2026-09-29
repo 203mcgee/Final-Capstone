@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+@theme {
+  --color-background: #f6f4d2;
+
+  /* ✅ Correct keyframe syntax for Tailwind v4 */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(1);
+    }
+  }
+
+  --animate-fade-in: fade-in 0.7s ease-out forwards;
+  --animate-fade-in-delay-1: fade-in 0.7s ease-out 0.2s forwards;
+  --animate-fade-in-delay-2: fade-in 0.7s ease-out 0.4s forwards;
+  --animate-fade-in-delay-3: fade-in 0.7s ease-out 0.6s forwards;
+  --animate-fade-in-delay-4: fade-in 0.7s ease-out 0.8s forwards;
+} /* 1. Reset default browser margins and set base viewport height */
+
+/* 2. Theme containers - full width and full viewport height */
+#light {
+  background-color: var(--color-background, #ffffff);
+  color: #000000;
+  min-height: 100vh;
+  width: 100%;
+}
+
+#dark {
+  background-color: #000000;
+  color: #ffffff;
+  min-height: 100vh;
+  width: 100%;
+}
+
+body {
+  background-color: #f6f4d2;
+  color: black;
+  /* padding: 50px; */
+}
+
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#hero-section {
+  display: inline-block;
+  align-items: center; /* Vertically centers the text with the image */
+  gap: 16px; /* Adds space between the text and image */
+  justify-content: center;
+  width: 20vw;
+  /* background-color: #ccddd3; */
+  border-radius: 50px;
+}
+
+#light {
+  background-color: var(--color-background);
+  min-height: 100vh;
+  width: 100%;
+}
+
+#dark {
+  background-color: black;
+  color: white;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* #light html {
+  background-color: var(--color-background);
+}
+
+#dark html {
+  background-color: black;
+} */
+
+#dark span {
+  background-color: black;
+  color: #ffffff;
+}
+
+#light #highlightName {
+  color: blue;
+}
+#light .search-bar {
+  background-color: white;
+}
+#dark #highlightName {
+  color: blue;
+}
+
+#light .hero-intro {
+  color: black;
+}
+#dark .search-bar-text {
+  color: white;
+}
+
+.switch {
+  display: flex;
+  width: 100vw;
+  height: 20px;
+
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  gap: 5px;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+@media only screen and (max-width: 375px) {
+  .switch {
+    width: 10px;
+    height: 20px;
+    position: absolute;
+    top: 139rem;
+    left: 30px;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+  }
+}
+/* Home Section */
+
+#light .span-change {
+  color: black;
+}
+#dark .span-change {
+  background-color: white;
+  color: black;
+}
+#light .metric-change {
+  color: black;
+}
+#dark .metric-change {
+  background-color: #f9fafb;
+  color: black;
+}
+
+@media only screen and (max-width: 375px) {
+  #light .developer-identity-section {
+    background-color: white;
+    color: black;
+  }
+  #black .developer-identity-section {
+    background-color: white;
+    color: black;
+  }
+}
+
+/* Project Section */
+@media only screen and (max-width: 375px) {
+  .projects-grid {
+    grid-template-columns: 1fr; /* Single column layout for small screens */
+  }
+}
+@media only screen and (max-width: 320px) {
+  .projects-grid {
+    grid-template-columns: 1fr; /* Single column layout for small screens */
+  }
+}
+/* Experience & Skills Section */
+.circle {
+  width: 4px;
+  height: 4px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.timeline {
+  display: flex;
+}
+
+.results-list {
+  width: 100%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 0px 8px #ddd;
+  border-radius: 10px;
+  margin-top: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#dark .grid-skills{
+  color:black;
+}
+
+/* Contact Section */
