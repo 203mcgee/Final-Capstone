@@ -1,36 +1,66 @@
 import mongoose from 'mongoose';
 
 
-const skillSchmea = new mongoose.Schema(
+const skillSchema = new mongoose.Schema(
     {
-        id: {
-            type: string
+        _id: {
+            type: String,
+            trim: true
         },
         name: {
-            type: string,
-            required: [true, 'This skill needs to have a name'];
-            unique
+            type: String,
+            required: [true, 'This skill needs to have a name'],
+            unique: true,
+            trim: true
         },
         category: {
-            type:string,
+            type: String,
+            enum: ["frontend", "backend", "database","tools","design level"],
+            trim:true,
 
         },
         level: {
-            type: string
+            type: String,
+            enum: ["beginner", "intermediate", "advanced"],
+            trim:true
+
         },
         yearsExperience: {
             type: Number,
-            min: 0
+            minimum: 0,
         },
         endorsements: {
-            type: Number
+            type: Number,
+            minimum: 0,
+            default: 0
         },
-        endorsedBy: {
-            
-        }
+        endorsedBy: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }]
 
     }
 );
+
+// skillSchema.set('toJSON', {
+//   virtuals: true, // adds a string "id" field
+//   versionKey: false, // hides "__v"
+//   transform: (doc, ret) => {
+//     delete ret._id;
+//     return ret;
+//   },
+// });
+
+skillSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: (doc, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.endorsedBy; // Capstone spec: endorsedBy is never sent to the client
+    return ret;
+  }
+});``
 
 export default mongoose.model('Skill', skillSchema);
 

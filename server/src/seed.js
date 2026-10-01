@@ -1,16 +1,21 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import Skill from './models/Skill';
+import Skill from './models/Skill.js';
+
+// This is too help define user id
+const user1 = new mongoose.Types.ObjectId();
+const user2 = new mongoose.Types.ObjectId();
+const user3 = new mongoose.Types.ObjectId();
 
 const skills = [
-    {id:"SK-01",name:"C++",category:"",level:"",yearsExperince: ,endorsements: ,endorsedBy: },
-    {id:"SK-02",name:"C",category:"",level:"",yearsExperince: ,endorsements: ,endorsedBy: },
-    {id:"SK-03",name:"Javascript",category:"",level:"",yearsExperince: ,endorsements: ,endorsedBy: },
-    {id:"SK-04",name:"HTML",category:"",level:"",yearsExperince: ,endorsements: ,endorsedBy: },
-    {id:"SK-05",name:"CSS",category:"",level:"",yearsExperince: ,endorsements: ,endorsedBy: },
-    {id:"SK-06",name:"React.js",category:"",level:"",yearsExperince: ,endorsements: ,endorsedBy: },
-    {id:"SK-07",name:"Node.js",category:"",level:"",yearsExperince: ,endorsements: ,endorsedBy: },
-    {id:"SK-08",name:"MySQL",category:"",level:"",yearsExperince: ,endorsements: ,endorsedBy: }
+    { _id:"SKL-0001",name:"C++",category:"tools",level:"advanced",yearsExperience:4 ,endorsements:1 ,endorsedBy:[user1] },
+    { _id:"SKL-0002",name:"C",category:"tools",level:"advanced",yearsExperience:2 ,endorsements:1 ,endorsedBy: [user1]},
+    { _id:"SKL-0003",name:"Javascript",category:"tools",level:"intermediate",yearsExperience:2 ,endorsements:2 ,endorsedBy: [user2,user3]},
+    { _id:"SKL-0004",name:"HTML",category:"frontend",level:"beginner",yearsExperience:.5 ,endorsements:1 ,endorsedBy:[user3] },
+    { _id:"SKL-0005",name:"CSS",category:"frontend",level:"beginner",yearsExperience:.5 ,endorsements:1 ,endorsedBy:[user3] },
+    { _id:"SKL-0006",name:"React.js",category:"frontend",level:"beginner",yearsExperience:.5 ,endorsements:1 ,endorsedBy:[user3] },
+    { _id:"SKL-0007",name:"Node.js",category:"backend",level:"intermediate",yearsExperience:.75 ,endorsements:2 ,endorsedBy:[user2,user3] },
+    { _id:"SKL-0008",name:"MySQL",category:"database",level:"intermediate",yearsExperience:.75 ,endorsements:1 ,endorsedBy:[user2] }
 ]
 
 async function seed() {
@@ -24,7 +29,7 @@ async function seed() {
       process.exit(1);
     }
 
-    await Recipe.deleteMany({});
+    await Skill.deleteMany({});
     console.log('Cleared existing Skills');
 
     const created = await Skill.insertMany(skills);
