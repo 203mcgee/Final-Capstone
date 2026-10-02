@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 // import Skill from './models/Skill.js';
 import skillRouter from './routes/skillRoutes.js'
 import authRouter from './routes/authRoutes.js';
@@ -57,6 +58,8 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
 });
+
+
 
 app.use('/api/skills',skillRouter);
 app.use('/api/auth', authRouter);

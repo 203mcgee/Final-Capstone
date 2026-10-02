@@ -29,6 +29,9 @@ async function seed() {
       process.exit(1);
     }
 
+    // https://www.youtube.com/watch?v=5PEhUQuHOh4
+    await mongoosePopulatedDocumentMarker.connect("mongodb://localhost:5000/")
+
     await Skill.deleteMany({});
     console.log('Cleared existing Skills');
 
