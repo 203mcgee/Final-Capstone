@@ -242,7 +242,7 @@ app.use('/api/skills', skillRouter);
 // This is the error handler 
 app.use((err, req, res, next) => {
     console.error('Server error:', err.message);
-    res.status(500).json({ success: false, error: 'Internal Server Error' });
+    res.status(err.status || 500).json({ success: false, error: err.message || 'Server error' });
 });
 
 app.listen(PORT, () => {

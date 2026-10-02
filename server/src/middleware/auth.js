@@ -31,6 +31,7 @@ export const requireAuth = (req, res, next) => {
 // middleware/auth.js or middleware/admin.js
 
 export function requireAdmin(req, res, next) {
+    console.log('requireAdmin sees:', req.user);
   // Check if role is an array and contains 'admin', or if it's a string equal to 'admin'
   const roles = Array.isArray(req.user.role) ? req.user.role : [req.user.role];
 

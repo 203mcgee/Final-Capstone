@@ -250,16 +250,64 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+
+
+
 // POST /api/skills - Create Skill (Admin Only)
 router.post('/', requireAuth, requireAdmin, async (req, res, next) => {
+  console.log('Body:', req.body);
+
   try {
-    const newSkill = new Skill(req.body);
+    const skillData = { ...req.body };
+
+    // Generate a custom _id from the name if one wasn't provided
+    if (!skillData._id && skillData.name) {
+      skillData._id = skillData.name.trim().toLowerCase().replace(/\s+/g, '-');
+    }
+
+    const newSkill = new Skill(skillData);
     const savedSkill = await newSkill.save();
     res.status(201).json({ success: true, data: savedSkill });
+  } catch (err) {
+    console.error('Create skill failed:', err.message);
+
+    // Duplicate _id or name
+    if (err.code === 11000) {
+      return res.status(409).json({ success: false, error: 'A skill with that name or ID already exists.' });
+    }
+
+    next(err);
+  }
+});
+
+// routes/skillRoutes.js
+
+// Make sure the path matches POST /:id/endorse
+router.post('/:id/endorse', requireAuth, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    const skill = await Skill.findById(id);
+    if (!skill) {
+      return res.status(404).json({ message: 'Skill not found' });
+    }
+
+    // Check if user already endorsed
+    if (skill.endorsedBy.includes(userId)) {
+      return res.status(400).json({ message: 'You have already endorsed this skill' });
+    }
+
+    skill.endorsedBy.push(userId);
+    skill.endorsements = skill.endorsedBy.length;
+    await skill.save();
+
+    res.status(200).json(skill);
   } catch (err) {
     next(err);
   }
 });
+
 
 // PATCH /api/skills/:id - Update Skill (Admin Only)
 router.patch('/:id', requireAuth, requireAdmin, async (req, res, next) => {
@@ -298,38 +346,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res, next) => {
 
 // export default router;
 
-// // POST /api/skills/:id/endorse - Logged-in Users
-// router.post('/:id/endorse', requireAuth, async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     const userId = req.user._id;
 
-//     const skill = await Skill.findById(id);
-//     if (!skill) {
-//       return res.status(404).json({ message: `Skill with ID '${id}' not found.` });
-//     }
-
-//     const alreadyEndorsed = skill.endorsedBy?.some(
-//       (e) => e.toString() === userId.toString()
-//     );
-
-//     if (alreadyEndorsed) {
-//       return res.status(400).json({ message: 'You have already endorsed this skill.' });
-//     }
-
-//     const updatedSkill = await Skill.findByIdAndUpdate(
-//       id,
-//       {
-//         $addToSet: { endorsedBy: userId },$inc: { endorsements: 1 }
-//       },
-//       { new: true }
-//     );
-
-//     res.status(200).json({ success: true, data: updatedSkill });
-//   } catch (err) {
-//     next(err);
-//   }
-// });
 
 // POST /api/skills - Create a New Skill (Admin Only)
 // router.post('/', requireAuth, requireAdmin, async (req, res, next) => {
