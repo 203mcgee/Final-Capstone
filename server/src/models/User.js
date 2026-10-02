@@ -15,10 +15,10 @@ const userSchema = new mongoose.Schema({
        type:String,
         required: [true, 'Password hash is required'] 
     },
-    roles:{
+    role:{
         type:[String],
-        enum: ["users","admin"],
-        default:["users"]
+        enum: ["admin","user"],
+        default: 'user'
     },
     isActive: {
         type: Boolean,

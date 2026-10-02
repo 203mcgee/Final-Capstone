@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react';
 import 'tailwindcss'
 import Timeline from '../components/Timeline';
+import { useEffect,useState } from 'react';
+import { getSkills } from '../api.js';
 
 
 
@@ -9,6 +11,12 @@ export default function ExperienceSkills() {
 
     // Experience & Skills (/experience): An interactive, highly structured timeline and grid setup demonstrating technical checkpoints, frameworks, and growth tracking.
     // https://www.youtube.com/watch?v=UqGIqNkhTXY
+
+    // The three pieces of state every screen that loads data needs.
+    const [skills, setSkills] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
 
     const knownSkills = [
         {
@@ -46,7 +54,7 @@ export default function ExperienceSkills() {
             direction: 'left'
 
         },
-    ]
+    ];
 
     const knownFrameworks = [
         {
@@ -59,7 +67,7 @@ export default function ExperienceSkills() {
             learned: 2026,
             direction: 'left'
         }
-    ]
+    ];
 
     const technicalCheckpoint = [
         {
@@ -77,9 +85,37 @@ export default function ExperienceSkills() {
             completion: 'January 15, 2026',
             direction: 'right'
         },
-    ]
+    ];
 
-    const gridSkills = ['C++','C','JavaScript','HTML','CSS' ,'React.js','Node.js','MySQL']
+    // const gridSkills = ['C++', 'C', 'JavaScript', 'HTML', 'CSS', 'React.js', 'Node.js', 'MySQL'];
+
+    useEffect(() => {
+        // useEffect itself can't be async, so we define a function inside.
+        async function loadSkills() {
+            try {
+                setIsLoading(true);
+                setError(null);
+
+                // TODO (LAB 2): call getAlbums() and put the result in state.
+                //
+                const data = await getSkills();
+                setSkills(data);
+
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                // Runs whether it worked or failed.
+                // Without this, a failed request leaves the spinner forever.
+                setIsLoading(false);
+            }
+        }
+
+        loadSkills();
+    }, []);
+
+
+
+
 
 
 
@@ -88,13 +124,23 @@ export default function ExperienceSkills() {
         <>
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold text-center mb-8">My Experience & Skills</h1>
-{/* text-black text-center bg-white text-2xl m-3.5 p-2.5 rounded-lg min-h-fit min-w-fit max-h-3.5 max-w-3.5  */}
-                <div className='grid grid-cols-3 gap-1.5 pb-1.5  '>
+                {/* text-black text-center bg-white text-2xl m-3.5 p-2.5 rounded-lg min-h-fit min-w-fit max-h-3.5 max-w-3.5  */}
+                {/* <div className='grid grid-cols-3 gap-1.5 pb-1.5  '>
                     {gridSkills.map((skill) =>(
                         <div key={skill} className='grid-skills bg-white rounded-full mx-auto w-full text-center pb-3 dark:text-black  object-contain'>{skill}</div>
                         
                     ))}
-                </div>
+                </div> */}
+                {isLoading && <p className="status">Loading skills…</p>}
+
+                {error && (
+                    <p className="status error">Could not load skills: {error}</p>
+                )}
+
+                {!isLoading && !error && skills.length === 0 && (
+                    <p className="status">No skills yet.</p>
+                )}
+
 
                 {/* Skills Section */}
                 <section className="mb-12">

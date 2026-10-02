@@ -196,7 +196,7 @@
 
 import express from 'express';
 import Skill from '../models/Skill.js';
-// import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { requireAuth, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -250,6 +250,54 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+// POST /api/skills - Create Skill (Admin Only)
+router.post('/', requireAuth, requireAdmin, async (req, res, next) => {
+  try {
+    const newSkill = new Skill(req.body);
+    const savedSkill = await newSkill.save();
+    res.status(201).json({ success: true, data: savedSkill });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PATCH /api/skills/:id - Update Skill (Admin Only)
+router.patch('/:id', requireAuth, requireAdmin, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updatedSkill = await Skill.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!updatedSkill) {
+      return res.status(404).json({ success: false, error: `Skill with ID ${id} not found.` });
+    }
+
+    res.status(200).json({ success: true, data: updatedSkill });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/skills/:id - Delete Skill (Admin Only)
+router.delete('/:id', requireAuth, requireAdmin, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const deletedSkill = await Skill.findByIdAndDelete(id);
+
+    if (!deletedSkill) {
+      return res.status(404).json({ success: false, error: `Skill with ID ${id} not found.` });
+    }
+
+    res.status(200).json({ success: true, message: `Skill ${id} deleted successfully.` });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// export default router;
+
 // // POST /api/skills/:id/endorse - Logged-in Users
 // router.post('/:id/endorse', requireAuth, async (req, res, next) => {
 //   try {
@@ -283,7 +331,7 @@ router.get('/:id', async (req, res, next) => {
 //   }
 // });
 
-// // POST /api/skills - Create a New Skill (Admin Only)
+// POST /api/skills - Create a New Skill (Admin Only)
 // router.post('/', requireAuth, requireAdmin, async (req, res, next) => {
 //   try {
 //     const { _id, name, category, level, yearsExperience } = req.body;
