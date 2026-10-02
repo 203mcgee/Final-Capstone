@@ -1,24 +1,19 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
 
 
 // info from this video: https://www.youtube.com/watch?v=yOAiw3gD9O8
 
 const userSchema = new mongoose.Schema({
-    username:{
-        type:String,
-        required: true,
-        unique: true
-    },
     email:{
         type:String,
-        required: true,
+        required: [true, 'Email is required'],
         unique: true
     },
-    password:{
+    passwordHash:{
        type:String,
-        required: true 
+        required: [true, 'Password hash is required'] 
     },
     roles:{
         type:[String],
@@ -32,28 +27,26 @@ const userSchema = new mongoose.Schema({
     tokenVersion:{
         type: Number,
         default: 0
-    },
-    {timestamps: true}
+    }
+    
+    
 
-});
+},
+{timestamps:true}
+);
 
 //Middleware
 
-userSchema.pre("save", async function(next){
-    try{
-        if(!this.isModified("password")){
-            return next();
-        }
-
-        const salt = await bcrypt.genSalt(10);
-
-        const hashedPassword = await bcrypt.hash(this.password,salt);
-
-        this.password = hashedPassword;
-        next();
-    } catch(err){
-        next(err);
-    }
+userSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: (doc, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.passwordHash;
+    delete ret.tokenVersion;
+    return ret;
+  }
 });
 
 export default mongoose.model('User', userSchema);

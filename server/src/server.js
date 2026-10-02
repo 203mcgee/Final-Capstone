@@ -2,10 +2,10 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 // import Skill from './models/Skill.js';
-import skillRouter from './routes/skillRoutes.js'
 import authRouter from './routes/authRoutes.js';
+import skillRouter from './routes/skillRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -61,8 +61,11 @@ app.get('/health', (req, res) => {
 
 
 
-app.use('/api/skills',skillRouter);
+// Auth endpoints
 app.use('/api/auth', authRouter);
+
+// Skill endpoints
+app.use('/api/skills', skillRouter);
 
 
 // // For now this is to help with the search
