@@ -120,6 +120,26 @@ export default function ExperienceSkills() {
         loadSkills();
     }, []);
 
+    async function handleDelete(id) {
+        if (!window.confirm('Delete this album?')) return;
+
+        try {
+            // TODO (LAB 3): delete it on the server, then reload the list.
+            //
+            await deleteSkill(id);
+            await loadSkills();
+
+        } catch (err) {
+            setError(err.message);
+            // Someone else may have deleted it already. Refresh either way
+            // so the screen stops showing something that doesn't exist.
+            loadSkills();
+        }
+    }
+
+    
+
+
 
 
 

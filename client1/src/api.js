@@ -35,3 +35,44 @@ export async function getSkills(search) {
   return handleResponse(res);
 }
 
+export async function createSkill(skill) {
+  // TODO (LAB 3): a POST needs THREE things a GET doesn't:
+  //   1. method: 'POST'
+  //   2. headers: { 'Content-Type': 'application/json' }
+  //   3. body: JSON.stringify(album)
+  //
+  // These are exactly what you set in Postman: the method dropdown,
+  // the Body → raw → JSON dropdown, and the text you typed.
+  //
+  const res = await fetch(`${BASE_URL}/api/skills`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(skill),
+  });
+  return handleResponse(res);
+}
+
+export async function updateSkill(id, changes) {
+  
+  
+  const res = await fetch(`${BASE_URL}/api/skills/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(changes),
+  });
+  return handleResponse(res);
+}
+
+// ---------------------------------------------------------------
+// DELETE an album
+// ---------------------------------------------------------------
+export async function deleteSkill(id) {
+ 
+  const res = await fetch(`${BASE_URL}/api/skills/${id}`, {
+    method: 'DELETE',
+  });
+  return handleResponse(res);
+}
+
+
+

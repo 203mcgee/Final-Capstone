@@ -2,14 +2,20 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit'
 // import bcrypt from 'bcrypt';
 // import Skill from './models/Skill.js';
 import authRouter from './routes/authRoutes.js';
 import skillRouter from './routes/skillRoutes.js';
 
+mongoose.set('sanitizeFilter',true);
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
+
+app.use(helmet());
 
 // try {
 //     await mongoose.connect(process.env.MONGODB_URI);
@@ -22,6 +28,8 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const allowedOrigins = process.env.CLIENT_URL
     ? process.env.CLIENT_URL.split(',')
     : ['http://localhost:5173'];
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5 });
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
