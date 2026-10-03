@@ -197,6 +197,8 @@
 import express from 'express';
 import Skill from '../models/Skill.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { validate } from '../middleware/validation.js';
+import { skillZodSchema,updateSkillZodSchema } from '../models/Skill.js';
 
 const router = express.Router();
 
@@ -252,11 +254,14 @@ router.get('/:id', async (req, res, next) => {
 
 
 
-
 // POST /api/skills - Create Skill (Admin Only)
-router.post('/', requireAuth, requireAdmin, async (req, res, next) => {
-  console.log('Body:', req.body);
-
+router.post('/', requireAuth, requireAdmin, validate(skillZodSchema),async (req, res, next) => {
+    console.log('Body:', req.body);
+    console.log('requireAuth:', typeof requireAuth);
+    console.log('requireAdmin:', typeof requireAdmin);
+    console.log('validate function:', typeof validate);
+    console.log('validate execution:', typeof validate(skillZodSchema));
+    
   try {
     const skillData = { ...req.body };
 
@@ -283,7 +288,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res, next) => {
 // routes/skillRoutes.js
 
 // Make sure the path matches POST /:id/endorse
-router.post('/:id/endorse', requireAuth,validate(skillZodSchema), async (req, res, next) => {
+router.post('/:id/endorse', requireAuth, async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;

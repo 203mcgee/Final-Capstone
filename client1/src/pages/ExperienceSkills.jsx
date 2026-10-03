@@ -22,7 +22,7 @@ export default function ExperienceSkills() {
     const [editingId, setEditingId] = useState(null);
     let [results, setResults] = useState([]);
     let [like,setLike] = useState([]);
-    
+    let [endorse,setEndorse] = useState([]);
 
     // const searchData = fetch('http://localhost:5000/api/skills');
 
