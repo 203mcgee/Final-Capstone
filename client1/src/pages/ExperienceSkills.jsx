@@ -2,7 +2,9 @@ import React, { Fragment } from 'react';
 import 'tailwindcss'
 import Timeline from '../components/Timeline';
 import { useEffect, useState } from 'react';
-import { getSkills,createSkill,deleteSkill, updateSkill } from '../api.js';
+import { getSkills, createSkill, deleteSkill, updateSkill } from '../api.js';
+import { SearchBar } from '../components/SearchBar';
+import { SearchResults } from '../components/SearchResults';
 
 
 
@@ -16,6 +18,13 @@ export default function ExperienceSkills() {
     const [skills, setSkills] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [search, setSearch] = useState('');
+    const [editingId, setEditingId] = useState(null);
+    let [results, setResults] = useState([]);
+    let [like,setLike] = useState([]);
+    
+
+    // const searchData = fetch('http://localhost:5000/api/skills');
 
 
     const knownSkills = [
@@ -89,8 +98,7 @@ export default function ExperienceSkills() {
 
     // This is from the Connection-Sprint-starter-pack
 
-    const [search, setSearch] = useState('');
-    const [editingId, setEditingId] = useState(null);
+
 
     async function loadSkills(searchTerm = search) {
         try {
@@ -126,54 +134,54 @@ export default function ExperienceSkills() {
     }, [search]);
 
     async function handleCreate(newSkill) {
-    try {
-      setFormError(null);
-      await createSkill(newSkill);
-      await loadSkills();
-      return true;
-    } catch (err) {
-      setFormError(err.message);
-      return false;
+        try {
+            setFormError(null);
+            await createSkill(newSkill);
+            await loadSkills();
+            return true;
+        } catch (err) {
+            setFormError(err.message);
+            return false;
+        }
     }
-  }
 
-  // -------------------------------------------------------------
-  // UPDATE
-  // -------------------------------------------------------------
-  async function handleUpdate(id, changes) {
-    try {
-      // TODO (LAB 4a): send only the changed fields, then reload
-      // and close the editor.
-      //
-      await updateSkill(id, changes);
-      await loadSkills();
-      setEditingId(null);
+    // -------------------------------------------------------------
+    // UPDATE
+    // -------------------------------------------------------------
+    async function handleUpdate(id, changes) {
+        try {
+            // TODO (LAB 4a): send only the changed fields, then reload
+            // and close the editor.
+            //
+            await updateSkill(id, changes);
+            await loadSkills();
+            setEditingId(null);
 
-      return true;
-    } catch (err) {
-      setError(err.message);
-      // Note: we do NOT close the editor here. A failed save should
-      // never throw away what the user typed.
-      return false;
+            return true;
+        } catch (err) {
+            setError(err.message);
+            // Note: we do NOT close the editor here. A failed save should
+            // never throw away what the user typed.
+            return false;
+        }
     }
-  }
 
-  // -------------------------------------------------------------
-  // DELETE
-  // -------------------------------------------------------------
-  async function handleDelete(id) {
-    if (!window.confirm('Delete this skill?')) return;
+    // -------------------------------------------------------------
+    // DELETE
+    // -------------------------------------------------------------
+    async function handleDelete(id) {
+        if (!window.confirm('Delete this skill?')) return;
 
-    try {
-      await deleteSkill(id);
-      await loadSkills();
-    } catch (err) {
-      setError(err.message);
-      loadSkills();
+        try {
+            await deleteSkill(id);
+            await loadSkills();
+        } catch (err) {
+            setError(err.message);
+            loadSkills();
+        }
     }
-  }
 
-  const isSearching = search.trim() !== '';
+    const isSearching = search.trim() !== '';
 
 
     return (
@@ -187,6 +195,10 @@ export default function ExperienceSkills() {
                         
                     ))}
                 </div> */}
+                <div className="mb-6 relative">
+                    <SearchBar setResults={setResults} repos={skills} />
+                    {results && results.length > 0 && <SearchResults results={results} />}
+                </div>
                 {isLoading && <p className="status">Loading skills…</p>}
 
                 {error && (

@@ -14,7 +14,7 @@ export const SearchBar = ({ setResults, repos }) => {
     }
 
     // Filter repo objects matching the search query
-    const filtered = (repos || []).filter((repo) =>
+    const filtered = (repos ||  []).filter((repo) =>
       repo.name.toLowerCase().includes(value.toLowerCase())
     );
 
