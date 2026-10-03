@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import 'tailwindcss'
 import Timeline from '../components/Timeline';
 import { useEffect, useState } from 'react';
-import { getSkills } from '../api.js';
+import { getSkills,createSkill,deleteSkill, updateSkill } from '../api.js';
 
 
 
@@ -87,64 +87,93 @@ export default function ExperienceSkills() {
         },
     ];
 
-    // const gridSkills = ['C++', 'C', 'JavaScript', 'HTML', 'CSS', 'React.js', 'Node.js', 'MySQL'];
+    // This is from the Connection-Sprint-starter-pack
 
-    useEffect(() => {
-        // useEffect itself can't be async, so we define a function inside.
-        async function loadSkills() {
-            try {
-                setIsLoading(true);
-                setError(null);
+    const [search, setSearch] = useState('');
+    const [editingId, setEditingId] = useState(null);
 
-                const data = await getSkills();
-                console.log("Fetched data:", data);
-
-                let skillsArray = [];
-                if (Array.isArray(data)) {
-                    skillsArray = data;
-                } else if (data && Array.isArray(data.skills)) {
-                    skillsArray = data.skills;
-                } else if (data && Array.isArray(data.data)) {
-                    skillsArray = data.data; // Handles standard Express API wrappers like { success: true, data: [...] }
-                }
-
-                setSkills(skillsArray);
-            } catch (err) {
-                setError(err.message || 'Failed to fetch skills');
-                console.error(err);
-            } finally {
-                setIsLoading(false);
-            }
-        }
-
-        loadSkills();
-    }, []);
-
-    async function handleDelete(id) {
-        if (!window.confirm('Delete this album?')) return;
-
+    async function loadSkills(searchTerm = search) {
         try {
-            // TODO (LAB 3): delete it on the server, then reload the list.
-            //
-            await deleteSkill(id);
-            await loadSkills();
+            setIsLoading(true);
+            setError(null);
 
+            const data = await getSkills(searchTerm);
+            console.log("Fetched data:", data);
+
+            let skillsArray = [];
+            if (Array.isArray(data)) {
+                skillsArray = data;
+            } else if (data && Array.isArray(data.skills)) {
+                skillsArray = data.skills;
+            } else if (data && Array.isArray(data.data)) {
+                skillsArray = data.data; // Handles standard Express API wrappers like { success: true, data: [...] }
+            }
+
+            setSkills(skillsArray);
         } catch (err) {
-            setError(err.message);
-            // Someone else may have deleted it already. Refresh either way
-            // so the screen stops showing something that doesn't exist.
-            loadSkills();
+            setError(err.message || 'Failed to fetch skills');
+            console.error(err);
+        } finally {
+            setIsLoading(false);
         }
     }
 
-    
 
+    useEffect(() => {
+        // useEffect itself can't be async, so we define a function inside.
+        loadSkills(search);
 
+    }, [search]);
 
+    async function handleCreate(newSkill) {
+    try {
+      setFormError(null);
+      await createSkill(newSkill);
+      await loadSkills();
+      return true;
+    } catch (err) {
+      setFormError(err.message);
+      return false;
+    }
+  }
 
+  // -------------------------------------------------------------
+  // UPDATE
+  // -------------------------------------------------------------
+  async function handleUpdate(id, changes) {
+    try {
+      // TODO (LAB 4a): send only the changed fields, then reload
+      // and close the editor.
+      //
+      await updateSkill(id, changes);
+      await loadSkills();
+      setEditingId(null);
 
+      return true;
+    } catch (err) {
+      setError(err.message);
+      // Note: we do NOT close the editor here. A failed save should
+      // never throw away what the user typed.
+      return false;
+    }
+  }
 
+  // -------------------------------------------------------------
+  // DELETE
+  // -------------------------------------------------------------
+  async function handleDelete(id) {
+    if (!window.confirm('Delete this skill?')) return;
 
+    try {
+      await deleteSkill(id);
+      await loadSkills();
+    } catch (err) {
+      setError(err.message);
+      loadSkills();
+    }
+  }
+
+  const isSearching = search.trim() !== '';
 
 
     return (
