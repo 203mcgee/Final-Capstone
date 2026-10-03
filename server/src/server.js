@@ -71,7 +71,7 @@ app.get('/health', (req, res) => {
 
 // Auth endpoints
 app.use('/api/auth', authRouter);
-// app.use('/api/auth/login',loginLimiter);
+app.use('/api/auth/login',loginLimiter);
 
 // Skill endpoints
 app.use('/api/skills', skillRouter);

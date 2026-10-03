@@ -1,4 +1,38 @@
 import mongoose from 'mongoose';
+import {z} from 'zod';
+
+
+export const skillZodSchema = z.object({
+  _id: z.string().trim().optional(), // Custom ID like 'SKL-0001'
+  name: z
+    .string({ required_error: 'This skill needs to have a name' })
+    .trim()
+    .min(1, 'Name cannot be empty'),
+  category: z.enum(['frontend', 'backend', 'database', 'tools', 'design'], {
+    errorMap: () => ({
+      message: 'Category must be one of: frontend, backend, database, tools, design'
+    })
+  }),
+  level: z.enum(['beginner', 'intermediate', 'advanced'], {
+    errorMap: () => ({
+      message: 'Level must be one of: beginner, intermediate, advanced'
+    })
+  }),
+  yearsExperience: z
+    .number({ required_error: 'Years of experience is required' })
+    .min(0, 'Years of experience must be at least 0'),
+  endorsements: z
+    .number()
+    .min(0, 'Endorsements must be at least 0')
+    .default(0)
+    .optional(),
+  endorsedBy: z
+    .array(z.string())
+    .optional()
+}).strip(); // Unknown fields are automatically stripped
+
+// Partial schema for PATCH requests (all fields optional)
+export const updateSkillZodSchema = skillZodSchema.partial();
 
 
 const skillSchema = new mongoose.Schema(

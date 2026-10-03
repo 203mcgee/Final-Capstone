@@ -283,7 +283,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res, next) => {
 // routes/skillRoutes.js
 
 // Make sure the path matches POST /:id/endorse
-router.post('/:id/endorse', requireAuth, async (req, res, next) => {
+router.post('/:id/endorse', requireAuth,validate(skillZodSchema), async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
@@ -310,7 +310,7 @@ router.post('/:id/endorse', requireAuth, async (req, res, next) => {
 
 
 // PATCH /api/skills/:id - Update Skill (Admin Only)
-router.patch('/:id', requireAuth, requireAdmin, async (req, res, next) => {
+router.patch('/:id', requireAuth, requireAdmin,validate(updateSkillZodSchema), async (req, res, next) => {
   try {
     const { id } = req.params;
     const updatedSkill = await Skill.findByIdAndUpdate(id, req.body, {

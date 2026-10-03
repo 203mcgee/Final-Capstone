@@ -1,5 +1,6 @@
 import React from 'react'
 
+// https://www.youtube.com/watch?v=8QgQKRcAUvM
 const RegisterForm = () => {
   return (
     <>
@@ -23,7 +24,7 @@ const RegisterForm = () => {
             <div className='submit'>
                 Login
             </div>
-            <div className='forgot-password'>Forgot Password <span>Click Here</span></div>
+            <div className='forgot-password'>Forgot Password? <span>Click Here</span></div>
             <div className='submit'>
                 Login
             </div>

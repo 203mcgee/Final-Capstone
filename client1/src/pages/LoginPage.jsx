@@ -1,9 +1,10 @@
 import React from 'react'
 
+
+// https://www.youtube.com/watch?v=8QgQKRcAUvM
 const LoginPage = () => {
 
-    let [like,setLike] = useState([]);
-    let [hasLiked,setHasLiked] = useState([])
+    
 
 
   return (
@@ -25,6 +26,7 @@ const LoginPage = () => {
             </div>
         </div>
         <div className='submit-container'>
+        <div className='forgot-password'>Forgot Password? <span>Click Here</span></div>
             <div className='submit'>
                 Login
             </div>
