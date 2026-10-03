@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import 'tailwindcss'
 import Timeline from '../components/Timeline';
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getSkills } from '../api.js';
 
 
@@ -96,16 +96,23 @@ export default function ExperienceSkills() {
                 setIsLoading(true);
                 setError(null);
 
-                // TODO (LAB 2): call getAlbums() and put the result in state.
-                //
                 const data = await getSkills();
-                setSkills(data);
+                console.log("Fetched data:", data);
 
+                let skillsArray = [];
+                if (Array.isArray(data)) {
+                    skillsArray = data;
+                } else if (data && Array.isArray(data.skills)) {
+                    skillsArray = data.skills;
+                } else if (data && Array.isArray(data.data)) {
+                    skillsArray = data.data; // Handles standard Express API wrappers like { success: true, data: [...] }
+                }
+
+                setSkills(skillsArray);
             } catch (err) {
-                setError(err.message);
+                setError(err.message || 'Failed to fetch skills');
+                console.error(err);
             } finally {
-                // Runs whether it worked or failed.
-                // Without this, a failed request leaves the spinner forever.
                 setIsLoading(false);
             }
         }
@@ -137,8 +144,24 @@ export default function ExperienceSkills() {
                     <p className="status error">Could not load skills: {error}</p>
                 )}
 
-                {!isLoading && !error && skills.length === 0 && (
-                    <p className="status">No skills yet.</p>
+                {!isLoading && !error && skills.length > 0 && (
+                    <section className="mb-12">
+                        <h2 className="text-2xl font-semibold border-b-2 text-center mb-4">
+                            API Skills & Endorsements
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {skills.map((skill) => (
+                                <div key={skill.id || skill._id} className="p-4 border rounded-lg shadow-sm bg-white dark:bg-gray-800">
+                                    <h3 className="font-bold text-lg">{skill.name}</h3>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">Category: {skill.category}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">Level: {skill.level}</p>
+                                    <p className="mt-2 text-xs font-semibold text-blue-600">
+                                        Endorsements: {skill.endorsements || 0}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
                 )}
 
 
