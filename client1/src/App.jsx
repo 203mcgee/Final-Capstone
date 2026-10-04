@@ -12,6 +12,9 @@ import Footer from './components/Footer';
 import Hero from './components/Hero';
 import LoginForm from "./pages/LoginPage.jsx";
 import Register from "./pages/RegisterForm.jsx"
+import { Access } from './pages/Access.jsx';
+import AdminPage from './pages/Admin.jsx';
+import User from './pages/User.jsx';
 
 // import  ThemeProvider  from './components/ThemeProvider';
 
@@ -32,8 +35,11 @@ function App() {
                 <Route path='/projects/:id' element={<Projects />} />
                 <Route path='/experience' element={<ExperienceSkills />} />
                 <Route path='/contact' element={<Contact />} />
-                <Route path='/Login' element={<LoginForm />} />
-                <Route path='/Register' element={<Register />} />
+                <Route path='/login' element={<LoginForm />} />
+                <Route path='/register' element={<Register />} />
+                <Route path='/access' element={<Access />} />
+                <Route path='/admin' element={<AdminPage />} />
+                <Route path='/user' element={<User />} />
               </Routes>
               
               <Footer />

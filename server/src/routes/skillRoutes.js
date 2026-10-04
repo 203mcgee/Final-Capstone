@@ -4,6 +4,7 @@ import Skill from '../models/Skill.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
 import { validate } from '../middleware/validation.js';
 import { skillZodSchema,updateSkillZodSchema } from '../models/Skill.js';
+import  authenticateToken  from './authRoutes.js'
 
 const router = express.Router();
 
@@ -90,7 +91,37 @@ router.post('/', requireAuth, requireAdmin, validate(skillZodSchema),async (req,
   }
 });
 
-;
+router.post('/:id/like', authenticateToken, async (req, res, next) => {
+  try {
+    const skill = await Skill.findById(req.params.id);
+    if (!skill) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    const userId = req.user.id;
+    const hasLiked = skill.likes.some((id) => id.toString() === userId);
+
+    if (hasLiked) {
+      return res.status(400).json({ 
+        message: 'You have already liked this item.',
+        alreadyLiked: true 
+      });
+    }
+
+    // Add user ID to likes array
+    skill.likes.push(userId);
+    await skill.save();
+
+    res.json({ 
+      message: 'Endorsement added successfully!', 
+      likeCount: skill.likes.length,
+      hasLiked: true 
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/:id/endorse', requireAuth, async (req, res, next) => {
   try {
     const { id } = req.params;

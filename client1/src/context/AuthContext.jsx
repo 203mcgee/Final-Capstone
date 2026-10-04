@@ -71,6 +71,7 @@ export function AuthProvider({ children }) {
     }, [token, authenticatedFetch]);
 
     // Handle Login API Request
+    // src/context/AuthContext.jsx
     const login = async (email, password) => {
         const response = await fetch(`${BASE_URL}/api/auth/login`, {
             method: 'POST',
@@ -81,13 +82,15 @@ export function AuthProvider({ children }) {
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            throw new Error(data.message || 'Login failed. Please check your credentials.');
+            throw new Error(data.message || 'Login failed.');
         }
 
+        // Save authentication details in state & localStorage
         localStorage.setItem('token', data.token);
         setToken(data.token);
         setUser(data.user || null);
-        return data;
+
+        return data.user; // <-- CRITICAL: Returns { id, email, role }
     };
 
     // Handle Register API Request

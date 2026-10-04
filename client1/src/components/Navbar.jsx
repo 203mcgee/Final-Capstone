@@ -21,6 +21,8 @@ function Navbar() {
   return (
     <header className="w-full border-b border-gray-200 bg-white">
       <nav className="flex justify-center items-center gap-4 py-3 px-4 max-w-4xl mx-auto flex-wrap text-sm md:text-base font-medium">
+        <Link to="/access" className={getLinkStyles('/access')}>Access center |</Link>
+
         <Link to="/" className={getLinkStyles('/')}>
           Home
         </Link>
@@ -39,12 +41,12 @@ function Navbar() {
         <Link to="/contact" className={getLinkStyles('/contact')}>
           Contact
         </Link>
-        <Link to="/login" className={getLinkStyles('/login')}>
+        {/* <Link to="/login" className={getLinkStyles('/login')}>
           login
         </Link>
         <Link to="/register" className={getLinkStyles('/register')}>
           register
-        </Link>
+        </Link> */}
       </nav>
     </header>
   );
