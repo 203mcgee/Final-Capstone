@@ -15,17 +15,19 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
-app.use(helmet());
 
 
 
-const allowedOrigins = process.env.CLIENT_URL
-    ? process.env.CLIENT_URL.split(',')
-    : ['http://localhost:5173'];
 
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5 });
 
+app.use(helmet());
+
+const allowedOrigins = process.env.CLIENT_URL
+? process.env.CLIENT_URL.split(',')
+: ['http://localhost:5173'];
 app.use(cors({ origin: allowedOrigins }));
+
 app.use(express.json());
 
 

@@ -32,8 +32,9 @@ export const skillZodSchema = z.object({
 }).strip(); // Unknown fields are automatically stripped
 
 // Partial schema for PATCH requests (all fields optional)
-export const updateSkillZodSchema = skillZodSchema.partial();
-
+export const updateSkillZodSchema = skillZodSchema
+  .omit({ endorsements: true, endorsedBy: true })
+  .partial();
 
 const skillSchema = new mongoose.Schema(
     {

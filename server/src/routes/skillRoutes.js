@@ -288,26 +288,64 @@ router.post('/', requireAuth, requireAdmin, validate(skillZodSchema),async (req,
 // routes/skillRoutes.js
 
 // Make sure the path matches POST /:id/endorse
+// router.post('/:id/endorse', requireAuth, async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const userId = req.user.userId;
+
+//     const skill = await Skill.findById(id);
+//     if (!skill) {
+//       return res.status(404).json({ message: 'Skill not found' });
+//     }
+
+//     // Check if user already endorsed
+//     if (skill.endorsedBy.includes(userId)) {
+//       return res.status(400).json({ message: 'You have already endorsed this skill' });
+//     }
+
+//     skill.endorsedBy.push(userId);
+//     skill.endorsements = skill.endorsedBy.length;
+//     await skill.save();
+
+//     res.status(200).json(skill);
+//   } catch (err) {
+//     next(err);
+//   }
+// });
 router.post('/:id/endorse', requireAuth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.userId || req.user.id;
 
-    const skill = await Skill.findById(id);
+    // ATOMIC OPERATION: Add user ID to array ONLY if not already present
+    const skill = await Skill.findOneAndUpdate(
+      { 
+        _id: id, 
+        endorsedBy: { $ne: userId } // Query condition: user must NOT be in array
+      },
+      { 
+        $addToSet: { endorsedBy: userId } // Atomic addition (prevents duplicates at DB level)
+      },
+      { new: true }
+    );
+
+    // If query failed to match, either skill doesn't exist OR user already endorsed
     if (!skill) {
-      return res.status(404).json({ message: 'Skill not found' });
+      const existingSkill = await Skill.findById(id);
+      if (!existingSkill) {
+        return res.status(404).json({ success: false, error: 'Skill not found' });
+      }
+      return res.status(400).json({ 
+        success: false, 
+        error: 'You have already endorsed this skill' 
+      });
     }
 
-    // Check if user already endorsed
-    if (skill.endorsedBy.includes(userId)) {
-      return res.status(400).json({ message: 'You have already endorsed this skill' });
-    }
-
-    skill.endorsedBy.push(userId);
+    // Atomically recalculate endorsements count
     skill.endorsements = skill.endorsedBy.length;
     await skill.save();
 
-    res.status(200).json(skill);
+    res.status(200).json({ success: true, data: skill });
   } catch (err) {
     next(err);
   }
