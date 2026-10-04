@@ -91,20 +91,19 @@ export function AuthProvider({ children }) {
     };
 
     // Handle Register API Request
-    const register = async (name, email, password) => {
+    const register = async (email, password) => {
         const response = await fetch(`${BASE_URL}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, password }),
+            body: JSON.stringify({ email, password }),
         });
 
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            throw new Error(data.message || 'Registration failed. Please try again.');
+            throw new Error(data.message || 'Registration failed.');
         }
 
-        // If backend issues token immediately upon registration
         if (data.token) {
             localStorage.setItem('token', data.token);
             setToken(data.token);
@@ -113,7 +112,6 @@ export function AuthProvider({ children }) {
 
         return data;
     };
-
     return (
         <AuthContext.Provider
             value={{

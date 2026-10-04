@@ -42,6 +42,9 @@ function Navbar() {
         <Link to="/login" className={getLinkStyles('/login')}>
           login
         </Link>
+        <Link to="/register" className={getLinkStyles('/register')}>
+          register
+        </Link>
       </nav>
     </header>
   );

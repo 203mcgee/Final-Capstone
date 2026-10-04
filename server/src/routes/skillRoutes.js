@@ -90,33 +90,7 @@ router.post('/', requireAuth, requireAdmin, validate(skillZodSchema),async (req,
   }
 });
 
-// routes/skillRoutes.js
-
-// Make sure the path matches POST /:id/endorse
-// router.post('/:id/endorse', requireAuth, async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     const userId = req.user.userId;
-
-//     const skill = await Skill.findById(id);
-//     if (!skill) {
-//       return res.status(404).json({ message: 'Skill not found' });
-//     }
-
-//     // Check if user already endorsed
-//     if (skill.endorsedBy.includes(userId)) {
-//       return res.status(400).json({ message: 'You have already endorsed this skill' });
-//     }
-
-//     skill.endorsedBy.push(userId);
-//     skill.endorsements = skill.endorsedBy.length;
-//     await skill.save();
-
-//     res.status(200).json(skill);
-//   } catch (err) {
-//     next(err);
-//   }
-// });
+;
 router.post('/:id/endorse', requireAuth, async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -192,95 +166,5 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res, next) => {
   }
 });
 
-// export default router;
-
-
-
-// POST /api/skills - Create a New Skill (Admin Only)
-// router.post('/', requireAuth, requireAdmin, async (req, res, next) => {
-//   try {
-//     const { _id, name, category, level, yearsExperience } = req.body;
-
-//     if (!name) {
-//       return res.status(400).json({ success: false, error: 'Skill name is required.' });
-//     }
-
-//     // Build unique duplicate check without undefined _id issues
-//     const duplicateQuery = [{ name: name.trim() }];
-//     if (_id) {
-//       duplicateQuery.push({ _id: _id });
-//     }
-
-//     const existingSkill = await Skill.findOne({ $or: duplicateQuery });
-
-//     if (existingSkill) {
-//       return res.status(400).json({ success: false, error: 'A skill with this ID or name already exists.' });
-//     }
-
-//     const skillData = {
-//       name: name.trim(),
-//       category,
-//       level,
-//       yearsExperience
-//     };
-
-//     // Only assign explicit _id if supplied
-//     if (id) {
-//       skillData._id = id;
-//     }
-
-//     const newSkill = new Skill(skillData);
-//     await newSkill.save();
-
-//     res.status(201).json({ success: true, data: newSkill });
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
-// // PATCH /api/skills/:id - Update Skill (Admin Only)
-// router.patch('/:id', requireAuth, requireAdmin, async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     const allowedUpdates = ['name', 'category', 'level', 'yearsExperience'];
-//     const updates = {};
-
-//     Object.keys(req.body).forEach((key) => {
-//       if (allowedUpdates.includes(key)) {
-//         updates[key] = req.body[key];
-//       }
-//     });
-
-//     const updatedSkill = await Skill.findByIdAndUpdate(
-//       id,
-//       { $set: updates },
-//       { new: true, runValidators: true }
-//     );
-
-//     if (!updatedSkill) {
-//       return res.status(404).json({ success: false, error: `Skill with ID '${id}' not found.` });
-//     }
-
-//     res.status(200).json({ success: true, data: updatedSkill });
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
-// // DELETE /api/skills/:id - Delete Skill (Admin Only)
-// router.delete('/:id', requireAuth, requireAdmin, async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     const deletedSkill = await Skill.findByIdAndDelete(id);
-
-//     if (!deletedSkill) {
-//       return res.status(404).json({ success: false, error: `Skill with ID '${id}' not found.` });
-//     }
-
-//     res.status(200).json({ success: true, message: 'Skill successfully deleted.' });
-//   } catch (err) {
-//     next(err);
-//   }
-// });
 
 export default router;

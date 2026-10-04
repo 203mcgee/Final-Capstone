@@ -3,6 +3,8 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import { validateRequest } from '../middleware/validation.js';
+import { registerSchema, loginSchema } from '../models/authSchema.js';
 
 const router = express.Router();
 
@@ -28,7 +30,7 @@ const authenticateToken = (req, res, next) => {
 router.get("/me", authenticateToken, async (req, res, next) => {
     try {
         const user = await User.findById(req.user.userId).select("-passwordHash");
-        
+
         if (!user || !user.isActive) {
             return res.status(404).json({ message: "User not found or inactive" });
         }
@@ -43,43 +45,73 @@ router.get("/me", authenticateToken, async (req, res, next) => {
     }
 });
 
-router.post("/login", async (req, res, next) => {
+
+
+
+router.post('/register', validateRequest(registerSchema), async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = email.toLowerCase().trim();
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Invalid email or password" });
+    // Check if user already exists
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res.status(400).json({ message: 'An account with this email already exists' });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // 🔐 Hash password with bcrypt in /register
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const isValidPassword = user
-      ? await bcrypt.compare(password, user.passwordHash)
-      : await bcrypt.compare(password, "$2b$12$invalidhashpaddingtoequalizetiming");
+    const newUser = new User({
+      email: normalizedEmail,
+      passwordHash: hashedPassword,
+      role: 'user',
+    });
 
-    if (!user || !isValidPassword || !user.isActive) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+    await newUser.save();
 
-    // 🔑 MAKE SURE role: user.role IS HERE
     const token = jwt.sign(
-      {
-        userId: user._id,
-        role: user.role, // 👈 CRITICAL: Must be explicitly included
-        tokenVersion: user.tokenVersion
-      },
-      process.env.JWT_SECRET || "your_super_secret_jwt_key_here",
-      { expiresIn: "1h" }
+      { userId: newUser._id, role: newUser.role, tokenVersion: newUser.tokenVersion },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '1h' }
     );
 
-    // Return the role in response body so you can see it in Postman immediately
-    res.status(200).json({ 
-      token, 
-      user: {
-        id: user._id,
-        email: user.email,
-        role: user.role
-      }
+    return res.status(201).json({
+      token,
+      user: newUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/auth/login
+router.post('/login', validateRequest(loginSchema), async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // 🔐 Verify password with bcrypt in /login
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, role: user.role, tokenVersion: user.tokenVersion },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '1h' }
+    );
+
+    return res.status(200).json({
+      token,
+      user,
     });
   } catch (err) {
     next(err);

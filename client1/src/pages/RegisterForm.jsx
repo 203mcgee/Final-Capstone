@@ -18,7 +18,8 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }) {
         setIsSubmitting(true);
 
         try {
-            await register(formData.name, formData.email, formData.password);
+            // Pass only email and password to register function
+            await register(formData.email, formData.password);
             if (onSuccess) onSuccess();
         } catch (err) {
             setErrorMessage(err.message);
@@ -40,7 +41,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }) {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
+                {/* <div>
                     <label htmlFor="reg-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Full Name
                     </label>
@@ -54,7 +55,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }) {
                         className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="Jane Doe"
                     />
-                </div>
+                </div> */}
 
                 <div>
                     <label htmlFor="reg-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

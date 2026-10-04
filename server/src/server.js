@@ -9,7 +9,7 @@ import rateLimit from 'express-rate-limit';
 import authRouter from './routes/authRoutes.js';
 import skillRouter from './routes/skillRoutes.js';
 
-mongoose.set('sanitizeFilter',true);
+mongoose.set('sanitizeFilter', true);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,8 +24,8 @@ const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5 });
 app.use(helmet());
 
 const allowedOrigins = process.env.CLIENT_URL
-? process.env.CLIENT_URL.split(',')
-: ['http://localhost:5173'];
+    ? process.env.CLIENT_URL.split(',')
+    : ['http://localhost:5173'];
 app.use(cors({ origin: allowedOrigins }));
 
 app.use(express.json());
@@ -50,7 +50,7 @@ app.get('/health', (req, res) => {
 
 
 // Auth endpoints
-app.use('/api/auth/login',loginLimiter);
+app.use('/api/auth/login', loginLimiter);
 app.use('/api/auth', authRouter);
 
 // Skill endpoints
@@ -61,8 +61,10 @@ app.use('/api/skills', skillRouter);
 
 // This is the error handler 
 app.use((err, req, res, next) => {
-    console.error('Server error:', err.message);
-    res.status(err.status || 500).json({ success: false, error: err.message || 'Server error' });
+    console.error("🔥 Server Error:", err.stack || err);
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal Server Error'
+    });
 });
 
 app.listen(PORT, () => {

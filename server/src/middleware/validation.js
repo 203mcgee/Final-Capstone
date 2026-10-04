@@ -1,6 +1,5 @@
-// src/middleware/validate.js
-
-import { success } from "zod";
+// src/middleware/validation.js
+import { z } from 'zod';
 
 
 export const validate = (schema) => (req, res, next) => {
@@ -25,3 +24,27 @@ export const validate = (schema) => (req, res, next) => {
   req.body = result.data;
   next();
 };
+
+export const validateRequest = (schema) => {
+  // MUST RETURN the inner middleware function taking (req, res, next)
+  return (req, res, next) => {
+    const result = schema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ 
+        message: result.error.errors[0].message 
+      });
+    }
+    next();
+  };
+};
+
+
+// export const registerSchema = z.object({
+//   email: z
+//     .string({ required_error: 'Email is required' })
+//     .email('Invalid email address')
+//     .trim(),
+//   password: z
+//     .string({ required_error: 'Password is required' })
+//     .min(6, 'Password must be at least 6 characters long')
+// }).strip();
