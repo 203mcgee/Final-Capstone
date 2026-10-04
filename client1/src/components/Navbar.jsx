@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import LoginForm from "../pages/LoginPage.jsx";
+import Register from "../pages/RegisterForm.jsx"
 
 function Navbar() {
   const location = useLocation();
@@ -36,6 +38,9 @@ function Navbar() {
 
         <Link to="/contact" className={getLinkStyles('/contact')}>
           Contact
+        </Link>
+        <Link to="/login" className={getLinkStyles('/login')}>
+          login
         </Link>
       </nav>
     </header>

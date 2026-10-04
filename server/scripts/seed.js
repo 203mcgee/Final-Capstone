@@ -34,7 +34,7 @@ async function seed() {
       process.env.ADMIN_PASSWORD || 'AdminPassword123!',
       12
     );
-    const userPasswordHash = await bcrypt.hash('UserPassword123!', 12);
+    const userPasswordHash = await bcrypt.hash('UserPassword123!', 12); // UserPassword123! is regular password
 
     // 5. Create users array (1 Admin + 3 Regular Users)
     const usersToCreate = [

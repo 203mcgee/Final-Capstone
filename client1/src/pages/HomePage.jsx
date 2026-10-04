@@ -1,7 +1,10 @@
 import React from "react";
 
+
 export default function HomePage() {
   return (
+
+
     <main className="max-w-7xl mx-auto px-6 py-12  min-h-screen">
       {/* 
         Responsive Grid: 

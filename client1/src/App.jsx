@@ -10,6 +10,8 @@ import Contact from './pages/Contact';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
+import LoginForm from "./pages/LoginPage.jsx";
+import Register from "./pages/RegisterForm.jsx"
 
 // import  ThemeProvider  from './components/ThemeProvider';
 
@@ -30,6 +32,8 @@ function App() {
                 <Route path='/projects/:id' element={<Projects />} />
                 <Route path='/experience' element={<ExperienceSkills />} />
                 <Route path='/contact' element={<Contact />} />
+                <Route path='/Login' element={<LoginForm />} />
+                <Route path='/Register' element={<Register />} />
               </Routes>
               
               <Footer />
