@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const AuthContext = createContext(null);
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
                 headers['Authorization'] = `Bearer ${currentToken}`;
             }
 
-            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            const response = await fetch(`${BASE_URL}${endpoint}`, {
                 ...options,
                 headers,
             });
@@ -72,7 +72,7 @@ export function AuthProvider({ children }) {
 
     // Handle Login API Request
     const login = async (email, password) => {
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        const response = await fetch(`${BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
 
     // Handle Register API Request
     const register = async (name, email, password) => {
-        const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        const response = await fetch(`${BASE_URL}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password }),

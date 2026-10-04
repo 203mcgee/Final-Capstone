@@ -1,35 +1,3 @@
-// // routes/authRoutes.js
-// import express from 'express';
-// import jwt from 'jsonwebtoken';
-
-// const router = express.Router();
-// const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_key';
-
-// // Mock login route to generate admin and user tokens for testing
-// router.post('/login', (req, res) => {
-//   const { email } = req.body;
-
-//   // Simple mock logic: if email contains "admin", issue an admin token
-//   const isAdmin = email && email.includes('admin');
-
-//   const payload = {
-//     _id: 'USER-0001',
-//     email: email || 'user@example.com',
-//     role: isAdmin ? 'admin' : 'user'
-//   };
-
-//   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
-
-//   res.status(200).json({
-//     message: 'Login successful',
-//     token,
-//     user: payload
-//   });
-// });
-
-// export default router;
-
-//authRoutes
 // routes/authRoutes.js
 import express from 'express';
 import bcrypt from 'bcrypt';
@@ -37,6 +5,43 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
 const router = express.Router();
+
+// Middleware to verify JWT token from header
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // "Bearer <TOKEN>"
+
+    if (!token) {
+        return res.status(401).json({ message: "No token provided" });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET || "your_super_secret_jwt_key_here", (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: "Invalid or expired token" });
+        }
+        req.user = decoded;
+        next();
+    });
+};
+
+// GET /api/auth/me - Retrieve current logged-in user details
+router.get("/me", authenticateToken, async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.userId).select("-passwordHash");
+        
+        if (!user || !user.isActive) {
+            return res.status(404).json({ message: "User not found or inactive" });
+        }
+
+        res.status(200).json({
+            id: user._id,
+            email: user.email,
+            role: user.role
+        });
+    } catch (err) {
+        next(err);
+    }
+});
 
 router.post("/login", async (req, res, next) => {
   try {

@@ -9,7 +9,7 @@ import rateLimit from 'express-rate-limit';
 import authRouter from './routes/authRoutes.js';
 import skillRouter from './routes/skillRoutes.js';
 
-// mongoose.set('sanitizeFilter',true);
+mongoose.set('sanitizeFilter',true);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -50,8 +50,8 @@ app.get('/health', (req, res) => {
 
 
 // Auth endpoints
-app.use('/api/auth', authRouter);
 app.use('/api/auth/login',loginLimiter);
+app.use('/api/auth', authRouter);
 
 // Skill endpoints
 app.use('/api/skills', skillRouter);
