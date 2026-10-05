@@ -120,6 +120,15 @@ async function handleResponse(res) {
   return res.json();
 }
 
+export async function endorseSkill(skillId) {
+  const response = await fetch(`/api/skills/${skillId}/endorse`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!response.ok) throw new Error('Failed to endorse skill');
+  return response.json();
+}
+
 // Authenticated fetch wrapper for Admin routes
 export async function fetchWithAuth(endpoint, options = {}) {
   const token = localStorage.getItem('token');

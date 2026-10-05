@@ -29,8 +29,11 @@ export default function LoginForm({ onSuccess, onSwitchToRegister }) {
       // 2. Route user based on their assigned role
       if (loggedInUser?.role === 'admin') {
         navigate('/admin');
-      } else {
-        navigate('/'); 
+      } else if(loggedInUser?.role === 'user') {
+        navigate('/user'); 
+      }
+      else{
+        setErrorMessage('This account does not exist!');
       }
     } catch (err) {
       setErrorMessage(err.message);

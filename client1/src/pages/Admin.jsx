@@ -1,101 +1,4 @@
-// // pages/AdminPage.jsx
-// import { useState, useEffect } from 'react';
-// import { getSkills, createSkill, updateSkill, deleteSkill } from '../api.js';
-
-// export default function AdminPage() {
-//   const [skills, setSkills] = useState([]);
-//   const [search, setSearch] = useState('');
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const [formError, setFormError] = useState(null);
-//   const [editingId, setEditingId] = useState(null);
-
-//   async function loadSkills(searchTerm = search) {
-//     try {
-//       setIsLoading(true);
-//       setError(null);
-
-//       const data = await getSkills(searchTerm);
-
-//       let skillsArray = [];
-//       if (Array.isArray(data)) {
-//         skillsArray = data;
-//       } else if (data && Array.isArray(data.skills)) {
-//         skillsArray = data.skills;
-//       } else if (data && Array.isArray(data.data)) {
-//         skillsArray = data.data;
-//       }
-
-//       setSkills(skillsArray);
-//     } catch (err) {
-//       setError(err.message || 'Failed to fetch skills');
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   }
-
-//   useEffect(() => {
-//     loadSkills(search);
-//   }, [search]);
-
-//   async function handleCreate(newSkill) {
-//     try {
-//       setFormError(null);
-//       await createSkill(newSkill);
-//       await loadSkills();
-//       return true;
-//     } catch (err) {
-//       setFormError(err.message);
-//       return false;
-//     }
-//   }
-
-//   async function handleUpdate(id, changes) {
-//     try {
-//       await updateSkill(id, changes);
-//       await loadSkills();
-//       setEditingId(null);
-//       return true;
-//     } catch (err) {
-//       setError(err.message);
-//       return false;
-//     }
-//   }
-
-//   async function handleDelete(id) {
-//     if (!window.confirm('Delete this skill permanently?')) return;
-
-//     try {
-//       await deleteSkill(id);
-//       await loadSkills();
-//     } catch (err) {
-//       setError(err.message);
-//       loadSkills();
-//     }
-//   }
-
-//   return (
-//     <div className="admin-container">
-//       <h2>Admin Skill Management</h2>
-//       {error && <p className="error-message">{error}</p>}
-
-//       {/* Admin actions: Render skills list with edit and delete triggers */}
-//       {isLoading ? (
-//         <p>Loading skills...</p>
-//       ) : (
-//         <ul>
-//           {skills.map((skill) => (
-//             <li key={skill._id}>
-//               <span>{skill.title} - {skill.category}</span>
-//               <button onClick={() => setEditingId(skill._id)}>Edit</button>
-//               <button onClick={() => handleDelete(skill._id)}>Delete</button>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// }
+// pages/AdminPage.jsx
 import { useState, useEffect } from 'react';
 import { getSkills, createSkill, updateSkill, deleteSkill } from '../api.js';
 
@@ -106,6 +9,9 @@ export default function AdminPage() {
   const [error, setError] = useState(null);
   const [formError, setFormError] = useState(null);
   const [editingId, setEditingId] = useState(null);
+  
+  // State for holding values while editing a row inline
+  const [editFormData, setEditFormData] = useState({ title: '', category: '' });
 
   async function loadSkills(searchTerm = search) {
     try {
@@ -135,39 +41,51 @@ export default function AdminPage() {
     loadSkills(search);
   }, [search]);
 
-  async function handleCreate(newSkill) {
-    try {
-      setFormError(null);
-      await createSkill(newSkill);
-      await loadSkills();
-      return true;
-    } catch (err) {
-      setFormError(err.message);
-      return false;
-    }
+  // Start inline editing for a row
+  function startEditing(skill) {
+    const id = skill._id || skill.id;
+    setEditingId(id);
+    setEditFormData({
+      title: skill.title || skill.name || '',
+      category: skill.category || '',
+    });
   }
 
-  async function handleUpdate(id, changes) {
+  // Cancel inline editing
+  function cancelEditing() {
+    setEditingId(null);
+    setEditFormData({ title: '', category: '' });
+  }
+
+  // Submit update to API
+  async function handleUpdate(id) {
+    if (!id) return;
     try {
-      await updateSkill(id, changes);
+      setError(null);
+      await updateSkill(id, editFormData);
       await loadSkills();
       setEditingId(null);
-      return true;
     } catch (err) {
-      setError(err.message);
-      return false;
+      setError(err.message || 'Failed to update skill');
     }
   }
 
+  // Delete skill
   async function handleDelete(id) {
+    if (!id) {
+      setError('Cannot delete skill: missing valid ID.');
+      return;
+    }
+
     if (!window.confirm('Delete this skill permanently?')) return;
 
     try {
+      setError(null);
       await deleteSkill(id);
       await loadSkills();
     } catch (err) {
-      setError(err.message);
-      loadSkills();
+      setError(err.message || 'Failed to delete skill');
+      await loadSkills();
     }
   }
 
@@ -230,7 +148,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Content Table / Cards */}
+        {/* Content Table */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-12 text-gray-500 dark:text-gray-400">
@@ -257,44 +175,90 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                  {skills.map((skill) => (
-                    <tr
-                      key={skill._id}
-                      className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
-                    >
-                      <td className="py-4 px-6 font-mono text-xs text-gray-500 dark:text-gray-400">
-                        {skill._id}
-                      </td>
-                      <td className="py-4 px-6 font-medium text-gray-900 dark:text-white">
-                        {skill.name || skill.title || 'Untitled Skill'}
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                          {skill.category || 'Uncategorized'}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6 text-right space-x-2">
-                        <button
-                          onClick={() => setEditingId(skill._id)}
-                          className="px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-md border border-blue-200 dark:border-blue-800 transition-colors"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(skill._id)}
-                          className="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-md border border-red-200 dark:border-red-800 transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {skills.map((skill, index) => {
+                    const skillId = skill._id || skill.id;
+                    const uniqueKey = skillId || `skill-${index}`;
+                    const isEditing = editingId === skillId;
+
+                    return (
+                      <tr
+                        key={uniqueKey}
+                        className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                      >
+                        <td className="py-4 px-6 font-mono text-xs text-gray-500 dark:text-gray-400">
+                          {skillId || 'N/A'}
+                        </td>
+                        <td className="py-4 px-6 font-medium text-gray-900 dark:text-white">
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editFormData.title}
+                              onChange={(e) =>
+                                setEditFormData({ ...editFormData, title: e.target.value })
+                              }
+                              className="w-full px-2 py-1 text-sm border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          ) : (
+                            skill.title || skill.name || 'Untitled Skill'
+                          )}
+                        </td>
+                        <td className="py-4 px-6">
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editFormData.category}
+                              onChange={(e) =>
+                                setEditFormData({ ...editFormData, category: e.target.value })
+                              }
+                              className="w-full px-2 py-1 text-sm border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                              {skill.category || 'Uncategorized'}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-4 px-6 text-right space-x-2">
+                          {isEditing ? (
+                            <>
+                              <button
+                                onClick={() => handleUpdate(skillId)}
+                                className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={cancelEditing}
+                                className="px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => startEditing(skill)}
+                                className="px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-md border border-blue-200 dark:border-blue-800 transition-colors"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(skillId)}
+                                className="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-md border border-red-200 dark:border-red-800 transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
