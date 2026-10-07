@@ -23,30 +23,22 @@ const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5 });
 
 app.use(helmet());
 
-// Used this to allow vercel and render to connect
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'https://final-frontend-zeta-one.vercel.app',
-  'http://localhost:5173',
-  'http://localhost:5000'
-].filter(Boolean);
+const allowedOrigins = [process.env.CLIENT_URL, 'http://localhost:5173'].filter(Boolean);
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or curl)
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(null, true); // Fallback to allow during demo
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
-};
+app.use(
+  cors({
+    origin(origin, callback) {
+      // no origin = Postman/curl
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 // 1. Mount CORS middleware BEFORE any routes
-app.use(cors(corsOptions));
+
 
 // 2. Explicitly handle preflight OPTIONS requests without path wildcards
 app.use((req, res, next) => {
@@ -76,6 +68,8 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
 });
+
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 
 

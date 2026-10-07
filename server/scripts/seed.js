@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import Skill from '../src/models/Skill.js';
 import User from '../src/models/User.js';
+import Counter from '../src/models/Counter.js';
 
 async function seed() {
   try {
@@ -151,6 +152,8 @@ async function seed() {
     ];
 
     const createdSkills = await Skill.insertMany(skillsToCreate);
+    await Counter.deleteMany({});
+    await Counter.create({ _id: 'skill', seq: skillsToCreate.length });
     console.log(`🛠️ Added ${createdSkills.length} Skills`);
 
   } catch (err) {

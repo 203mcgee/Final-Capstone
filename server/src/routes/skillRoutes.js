@@ -6,6 +6,7 @@ import { requireAuth, requireAdmin } from '../middleware/auth.js';
 import { validate } from '../middleware/validation.js';
 import { skillZodSchema, updateSkillZodSchema } from '../models/Skill.js';
 import authenticateToken from './authRoutes.js'
+import { nextSkillId } from '../models/Counter.js';
 
 const router = express.Router();
 
@@ -79,15 +80,14 @@ router.post('/', requireAuth, requireAdmin, validate(skillZodSchema), async (req
   console.log('validate execution:', typeof validate(skillZodSchema));
 
   try {
-    const skillData = { ...req.body };
+    const skillData = { ...req.body, _id: await nextSkillId() };
 
     // Generate a custom _id from the name if one wasn't provided
     if (!skillData._id && skillData.name) {
       skillData._id = skillData.name.trim().toLowerCase().replace(/\s+/g, '-');
     }
 
-    const newSkill = new Skill(skillData);
-    const savedSkill = await newSkill.save();
+    const saved = await new Skill(skillData).save();
     res.status(201).json({ success: true, data: savedSkill });
   } catch (err) {
     console.error('Create skill failed:', err.message);

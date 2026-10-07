@@ -3,7 +3,7 @@ import {z} from 'zod';
 
 
 export const skillZodSchema = z.object({
-  _id: z.string().trim().optional(), // Custom ID like 'SKL-0001'
+  // _id: z.string().trim().optional(), // Custom ID like 'SKL-0001'
   name: z
     .string({ required_error: 'This skill needs to have a name' })
     .trim()
