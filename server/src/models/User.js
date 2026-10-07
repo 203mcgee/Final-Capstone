@@ -6,11 +6,11 @@ import bcrypt from 'bcrypt';
 // info from this video: https://www.youtube.com/watch?v=yOAiw3gD9O8
 
 const userSchema = new mongoose.Schema({
-    email: {
-        type: String,
-        required: [true, 'Email is required'],
-        unique: true
-    },
+    email: { type: String, 
+      required: [true, 'Email is required'], 
+      unique: true, 
+      lowercase: true, 
+      trim: true },
     passwordHash: {
         type: String,
         required: [true, 'Password hash is required']
@@ -34,23 +34,23 @@ const userSchema = new mongoose.Schema({
 },
     { timestamps: true }
 );
-// Virtual field for plain-text password
-userSchema
-  .virtual('password')
-  .set(function (value) {
-    this._plainPassword = value;
-  })
-  .get(function () {
-    return this._plainPassword;
-  });
+// // Virtual field for plain-text password
+// userSchema
+//   .virtual('password')
+//   .set(function (value) {
+//     this._plainPassword = value;
+//   })
+//   .get(function () {
+//     return this._plainPassword;
+//   });
 
-userSchema.pre('save', async function () {
-    // Only hash password if modified
-    if (!this.isModified('passwordHash')) return;
+// userSchema.pre('save', async function () {
+//     // Only hash password if modified
+//     if (!this.isModified('passwordHash')) return;
 
-    const salt = await bcrypt.genSalt(10);
-    this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
-});
+//     const salt = await bcrypt.genSalt(10);
+//     this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+// });
 
 // Compare password method for login
 userSchema.methods.comparePassword = async function (candidatePassword) {

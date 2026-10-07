@@ -31,11 +31,11 @@ router.post('/items', async (req, res, next) => { /* Add item logic */
         next(err);
       }
  });
-// router.delete('/items/:id', async (req, res, next) => { /* Delete item logic */ 
+router.delete('/items/:id', async (req, res, next) => { /* Delete item logic */ 
 
-// });
-// router.patch('/items/:id/approve', async (req, res, next) => { /* Approve logic */ 
+});
+router.patch('/items/:id/approve', async (req, res, next) => { /* Approve logic */ 
 
-// });
+});
 
 export default router;
