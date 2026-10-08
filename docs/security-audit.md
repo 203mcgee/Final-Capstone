@@ -118,10 +118,12 @@ curl -i -H "Origin: https://final-frontend-zeta-one.vercel.app" $API/api/skills
 
 ## 7. Least-privilege Atlas user
 
-Expected: the app's database user has only the `readWrite` role on `final_capstone`, and is not an Atlas admin or `atlasAdmin`.
+Removed the atlasAdmin role from the app's database user, so a leaked credential can only reach final_capstone.     
 
-- Status: ☐ Pass ☐ Fail
+- Status: ☐ Pass 
 - Evidence: screenshot of Atlas, Database Access, with the user's role visible: ____
+
+![A Pass of 7](../img/Check7.png)
 
 ## 8. No secrets in the repo or history
 
@@ -155,6 +157,7 @@ curl -s -X POST $API/api/auth/login -H "Content-Type: application/json" \
 - Status: ☐ Pass 
 - Evidence: ____
 ![A Pass of 9](../img/Check9.png)
+![A Pass of 9](../img/Check9b.png)
 
 ## 10. Authorization and role handling
 
