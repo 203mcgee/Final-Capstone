@@ -1,19 +1,20 @@
-Portfolio Skills API
+# Portfolio Skills API
 
 A full-stack skills section for my portfolio. Visitors can browse and search my skills, logged-in visitors can endorse a skill once, and only I (the admin) can add, edit, or delete skills. The data lives in MongoDB Atlas, so it survives redeploys.
 
-Demo video: <PASTE VIDEO LINK HERE>
+Demo video: [Loom Video of Final Capstone](https://www.loom.com/share/62dc1e437a614c9783b4621f9df7db2b)
 
-Show Image
+# Show Image
+[Image of Final Capstone](../img/READMEIMG.png)
 
-Live links
+# Live links
 Front end: https://final-frontend-zeta-one.vercel.app
 API health check: https://final-backend-ga8z.onrender.com/api/health
-GitHub repo: <PASTE REPO URL HERE>
+GitHub repo: [REPO URL of Final Capstone](https://github.com/203mcgee/Final-Capstone.git)
 
 The API runs on Render's free tier, so the first request after a quiet period can take close to a minute while it wakes up.
 
-Tech stack
+# Tech stack
 Front end: React, Vite, React Router, Tailwind CSS (hosted on Vercel)
 Back end: Node.js, Express (hosted on Render)
 Database: MongoDB Atlas with Mongoose
@@ -30,9 +31,9 @@ Run it locally
 
 You need Node.js and a MongoDB Atlas database (or a local MongoDB).
 
-bash
-git clone <REPO URL>
-cd <repo folder>
+# bash
+   git clone https://github.com/203mcgee/Final-Capstone.git
+   cd Final-Capstone
 
 # API
 cd server
@@ -42,14 +43,17 @@ npm run seed
 npm run dev
 
 # Front end (in a second terminal)
+```
 cd client
 npm install
 cp .env.example .env     # set VITE_API_URL=http://localhost:5000
 npm run dev
 
 npm run seed clears the skills, users, and counter, adds 8 sample skills, and creates the admin account from ADMIN_EMAIL and ADMIN_PASSWORD. It refuses to run if NODE_ENV is production.
+```
 
-Environment variables
+# Environment variables
+```
 Variable	Where	Purpose
 MONGODB_URI	server	Atlas connection string
 JWT_SECRET	server	Secret used to sign tokens
@@ -57,7 +61,11 @@ CLIENT_URL	server	Front-end URL allowed by CORS (no trailing slash)
 ADMIN_EMAIL, ADMIN_PASSWORD	server	Used only by the seed script
 PORT, NODE_ENV	server	Server port and environment
 VITE_API_URL	client	Base URL of the API
-API routes
+```
+
+# API routes
+
+```
 Method	Path	Who	What it does
 GET	/api/health	Anyone	Returns { "status": "ok" }
 POST	/api/auth/register	Anyone	Creates a visitor account, returns a token and the user (409 if the email exists)
@@ -69,31 +77,43 @@ POST	/api/skills/:id/endorse	Logged in	Adds the user's endorsement and returns t
 POST	/api/skills	Admin	Creates a skill with the next custom ID (400 bad input, 409 duplicate name)
 PATCH	/api/skills/:id	Admin	Updates a skill's name, category, level, or years
 DELETE	/api/skills/:id	Admin	Deletes a skill
+```
 
 Errors always have the shape { "message": "..." }. A missing or bad token returns 401, and a logged-in user without permission returns 403.
 
-Data model
+# Data model
+
 Field	Rules
-id	String like SKL-0001, from a counter document and an atomic $inc
-name	Required, unique, trimmed
-category	One of frontend, backend, database, tools, design
-level	One of beginner, intermediate, advanced
-yearsExperience	Number, minimum 0
-endorsements	Number, minimum 0, changed only by the endorse route
-endorsedBy	Array of user IDs, never sent to the client
+id:	String like SKL-0001, from a counter document and an atomic $inc
+name:	Required, unique, trimmed
+category:	One of frontend, backend, database, tools, design
+level:	One of beginner, intermediate, advanced
+yearsExperience:	Number, minimum 0
+endorsements:	Number, minimum 0, changed only by the endorse route
+endorsedBy:	Array of user IDs, never sent to the client
 
 Responses use id instead of _id and never include __v or endorsedBy.
 
-Honest counter test
+# Honest counter test
 
 scripts/race.js sends 10 endorse requests at the same time from one logged-in user. The correct result is one 200, nine 409s, and the count going up by exactly 1.
 
-<PASTE THE OUTPUT OF scripts/race.js HERE>
-Security
+# Result of race.js
+
+```
+Skill SKL-0006 has 1 endorsements before the test.
+Firing 10 concurrent endorse requests as user1@example.com...
+Status codes: { '200': 1, '409': 9 }
+Endorsements after: 2 (change: 1)
+PASS: exactly one 200, nine 409s, count +1
+```
+
+# Security
 
 Every request body is validated with Zod and unknown fields are stripped. The server uses Helmet, sanitizeFilter, a login rate limit, and CORS limited to the front-end URL. Passwords are hashed with bcrypt, and the admin account can only be created by the seed script. The full audit, with evidence, is in docs/security-audit.md.
 
-Documentation
+# Documentation
+
 docs/data-design.md: SQL vs NoSQL write-up
 docs/security-audit.md: 10-point audit with evidence
 docs/ also holds the exported Postman collection
@@ -104,7 +124,8 @@ The login token is stored in localStorage and lasts one hour, with no refresh to
 There is no password reset, and visitors can't change or delete their accounts.
 The login rate limit is per IP address.
 Atlas free clusters pause after 30 days without activity.
-What I would build next
+
+# What I would build next
 Account routes: change password, log out everywhere, and deactivate an account
 A second feature (projects or a guestbook) using the same patterns
 Automated tests with Supertest for the auth and endorse routes

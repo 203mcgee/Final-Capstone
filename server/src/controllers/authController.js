@@ -1,7 +1,7 @@
 // controllers/authController.js
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+
 
 export async function login(req, res) {
   try {
