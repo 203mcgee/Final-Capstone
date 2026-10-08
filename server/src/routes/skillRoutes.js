@@ -80,15 +80,13 @@ router.post('/', requireAuth, requireAdmin, validate(skillZodSchema), async (req
   console.log('validate execution:', typeof validate(skillZodSchema));
 
   try {
+    if (await Skill.exists({ name: req.body.name })) {
+      return res.status(409).json({ message: 'A skill with that name already exists.' });
+    }
     const skillData = { ...req.body, _id: await nextSkillId() };
 
-    // Generate a custom _id from the name if one wasn't provided
-    if (!skillData._id && skillData.name) {
-      skillData._id = skillData.name.trim().toLowerCase().replace(/\s+/g, '-');
-    }
-
     const saved = await new Skill(skillData).save();
-    res.status(201).json({ success: true, data: savedSkill });
+    res.status(201).json({ success: true, data: saved });
   } catch (err) {
     console.error('Create skill failed:', err.message);
 
