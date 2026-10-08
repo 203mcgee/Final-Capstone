@@ -1,34 +1,6 @@
 // middleware/auth.js
 import jwt from 'jsonwebtoken';
 
-// export const requireAuth = (req, res, next) => {
-//   const authHeader = req.headers.authorization;
-
-//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-//     return res.status(401).json({ message: 'Unauthorized: Authentication required' });
-//   }
-
-//   const token = authHeader.split(' ')[1];
-
-//   try {
-//     const decoded = jwt.verify(
-//       token, 
-//       process.env.JWT_SECRET || 'fallback_secret_key'
-//     );
-    
-//     // Attach decoded user info (including role) to request
-//     req.user = {
-//       userId: decoded.userId,
-//       role: decoded.role // 👈 Must be present
-//     };
-
-//     next();
-//   } catch (err) {
-//     return res.status(401).json({ message: 'Unauthorized: Invalid or expired token' });
-//   }
-// };
-// server/src/middleware/auth.js
-
 
 export function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;

@@ -19,7 +19,11 @@ const MONGODB_URI = process.env.MONGODB_URI;
 
 
 
-const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5 });
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  message: { message: 'Too many login attempts. Try again in 15 minutes.' },
+});
 
 app.use(helmet());
 

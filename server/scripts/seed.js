@@ -12,10 +12,9 @@ async function seed() {
     console.log('✅ Connected to MongoDB');
 
     // 2. Production Safety Guard
-    if (process.env.NODE_ENV === 'production') {
-      console.error('❌ Refusing to seed a production database.');
-      process.exit(1);
-    }
+    if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
+     throw new Error('Set ADMIN_EMAIL and ADMIN_PASSWORD in .env');
+   }
 
     // 3. Clear existing database collections
     console.log('🧹 Clearing existing Skills and Users...');

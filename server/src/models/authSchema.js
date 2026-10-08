@@ -9,13 +9,7 @@ export const registerSchema = z.object({
     .min(1, 'Email cannot be empty'),
   password: z
     .string({ required_error: 'Password is required' })
-    .min(6, 'Password must be at least 6 characters long'),
-  role: z
-    .enum(['admin', 'user'], {
-      errorMap: () => ({ message: 'Role must be either admin or user' })
-    })
-    .optional()
-    .default('user')
+    .min(6, 'Password must be at least 6 characters long')
 }).strip(); // Automatically strip unexpected body fields
 
 // Schema for POST /api/auth/login
