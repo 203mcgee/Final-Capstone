@@ -19,33 +19,31 @@ router.get('/health', (req, res) => {
 });
 
 // GET /api/skills - Search & Filter Skills
+const escapeRegex = (s) => s.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const SORTS = {
+  name: { name: 1 },
+  level: { level: 1 },
+  years: { yearsExperience: -1 },
+};
+
 router.get('/', async (req, res, next) => {
   try {
-    const { category, name, level, years } = req.query;
+    const { search, category, level, sort } = req.query;
     const filter = {};
 
-
-
-
-
-
-    if (category) {
-      filter.category = { $regex: category.trim(), $options: 'i' };
+    if (typeof search === 'string' && search.trim()) {
+      const rx = mongoose.trusted({ $regex: escapeRegex(search), $options: 'i' });
+      filter.$or = [{ name: rx }, { category: rx }];
     }
-
-    if (name) {
-      filter.name = { $regex: name.trim(), $options: 'i' };
+    if (typeof category === 'string' && category.trim()) {
+      filter.category = category.trim().toLowerCase();
     }
-
-    if (level) {
+    if (typeof level === 'string' && level.trim()) {
       filter.level = level.trim().toLowerCase();
     }
 
-    if (years) {
-      filter.yearsExperience = Number(years);
-    }
-
-    const skills = await Skill.find(filter);
+    const skills = await Skill.find(filter).sort(SORTS[sort] || { name: 1 });
     res.status(200).json({ success: true, count: skills.length, data: skills });
   } catch (err) {
     next(err);
